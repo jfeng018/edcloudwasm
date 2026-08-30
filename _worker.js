@@ -1652,7 +1652,7 @@ const handleXwebPost = async (request) => {
     const reader = request.body?.getReader({mode: 'byob'});
     if (!reader) return new Response(null, {status: 400});
     const state = {socks5State: 0, tcpWriter: null, tcpSocket: null, needMore: false, allowNeedMore: true, disableSsAead: true, xwebPipeTo: true};
-    const bridge = new IdentityTransformStream(), responseWriter = bridge.writable.getWriter();
+    const bridge = new IdentityTransformStream(undefined, {highWaterMark: 32 * 1024 * 1024}), responseWriter = bridge.writable.getWriter();
     let xwebBuffer = new ArrayBuffer(8192), used = 0;
     const close = () => {if (state.xwebPipeTo) responseWriter.close().catch(() => {})};
     const writable = {send(chunk) {if (chunk?.byteLength) return responseWriter.write(chunk)}};
